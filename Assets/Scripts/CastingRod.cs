@@ -87,12 +87,7 @@ public class CastingRod : MonoBehaviour
   {
     if (isCasting)
     {
-      //float currentDistance = Vector2.Distance(castStartPosition, bobber.transform.position);
-      //float progress = currentDistance / distanceToTravel;
       bobber.UpdateScale(distanceToTravel);
-
-
-
       Debug.Log("Casting");
       float currentDistanceTXT = Vector2.Distance(castStartPosition, bobber.transform.position);
       distanceText.text = $"{currentDistanceTXT:F2}m";
