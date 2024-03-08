@@ -25,8 +25,10 @@ public class BobberBehavior : MonoBehaviour
     rb.AddForce(new Vector2(0, forceMagnitude), ForceMode2D.Impulse);
   }
 
-  public void UpdateScale(float progress)
+  public void UpdateScale(float distanceToTravel)
   {
+    float currentDistance = Vector2.Distance(castStartPosition, transform.position);
+    float progress = currentDistance / distanceToTravel;
     float scaleMultiplier = CalculateScaleMultiplier(progress);
     transform.localScale = originalScale * scaleMultiplier;
   }
