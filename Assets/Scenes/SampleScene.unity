@@ -808,7 +808,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff3451838653c654aa9e6e4fd6cffdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  castStartPosition: {x: 0, y: 0}
   maxCastForce: 15
+  maxCastDistance: 8
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1716,7 +1718,6 @@ MonoBehaviour:
   distanceText: {fileID: 2007847656}
   maxCharge: 100
   maxCastDistance: 8
-  maxCastForce: 15
 --- !u!212 &1596298402
 SpriteRenderer:
   m_ObjectHideFlags: 0

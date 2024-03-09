@@ -7,35 +7,25 @@ using UnityEngine.UI;
 
 public class CastingRod : MonoBehaviour
 {
+  //this is our request for other components. Maybe its something else we can do?
   public BobberBehavior bobber;
+
+  //this goes into the UI manager
   public Slider chargeSlider;
   public TextMeshProUGUI distanceText;
 
+  //this actually is correct.
   public float maxCharge = 100f;
-  public float maxCastDistance = 10f;
-  public float maxCastForce = 15f;
-    
   private float chargeRate = 100f; // Adjust as needed for speed of charging
   private float chargeAmount = 0f;
-    
+  
+  //move all these to state machine.
   private bool isCharging = false;
   private bool isCasting = false;
   private bool isReelable = false;
 
-  //Boobber Parts
-  private float distanceToTravel;
-  private Rigidbody2D bobberRigidbody;
-  private Vector2 castStartPosition;
-  private Vector3 originalScale;
 
-  #region Changes to be made
-    //*
-    //I need to now seperate the components. We need all UI components moved out and put into a UI manager. 
-    //I need to make the bob behavior outside of the casting method. 
-    //Once we have componentized everything from here, we can add the bobbing method to the bobb to let it move in the water.
-    //Then we need a state machine to keep track of what state the casting, and bobber is in to begin the fish system.
-    //*//
-  #endregion
+
 
   void Start()
   {
@@ -75,9 +65,8 @@ public class CastingRod : MonoBehaviour
         Debug.Log("Release");
         isCharging = false;
         isCasting = true;
-        distanceToTravel = (chargeAmount / maxCharge) * maxCastDistance;
-        Debug.Log("Distance: " + distanceToTravel);
-        CastBobber(chargeAmount, distanceToTravel);
+        //the distance math should be figured out in the bobber. The casting is JUST the action.
+        CastBobber(chargeAmount, maxCharge);
             
       }
     }
@@ -87,11 +76,10 @@ public class CastingRod : MonoBehaviour
   {
     if (isCasting)
     {
-      bobber.UpdateScale(distanceToTravel);
+      bobber.UpdateScale();
       Debug.Log("Casting");
-      float currentDistanceTXT = Vector2.Distance(castStartPosition, bobber.transform.position);
-      distanceText.text = $"{currentDistanceTXT:F2}m";
-
+      float _currentDistanceTXT = Vector2.Distance(bobber.castStartPosition, bobber.transform.position);
+      distanceText.text = $"{_currentDistanceTXT:F2}m";
     }
   }
 
@@ -106,8 +94,9 @@ public class CastingRod : MonoBehaviour
     }
   }
 
-  private void CastBobber(float charge, float distanceToTravel)
+  private void CastBobber(float _charge, float _maxCharge)
   {
-    bobber.ApplyCastForce(charge, maxCharge);
+    //we coudl just straight call the bobber, but we may want additional bobber details later.
+    bobber.ApplyCastForce(_charge, _maxCharge);
   }
 }

@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+  public static GameManager Instance { get; private set; }
 
-    // Update is called once per frame
-    void Update()
+  #region Fishing Rod States
+  public bool IsCharging { get; set; }
+  public bool IsCasting { get; set; }
+  public bool IsReelable { get; set; }
+  #endregion
+
+  private void Awake()
+  {
+    if (Instance == null)
     {
-        
+      Instance = this;
+      DontDestroyOnLoad(gameObject);
     }
+    else
+    {
+      Destroy(gameObject);
+    }
+  }
 }
