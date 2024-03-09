@@ -19,13 +19,6 @@ public class CastingRod : MonoBehaviour
   private float chargeRate = 100f; // Adjust as needed for speed of charging
   private float chargeAmount = 0f;
   
-  //move all these to state machine.
-  private bool isCharging = false;
-  private bool isCasting = false;
-  private bool isReelable = false;
-
-
-
 
   void Start()
   {
@@ -42,42 +35,34 @@ public class CastingRod : MonoBehaviour
   void ChargeCast()
   {
     //this SHOULD be happening as we hold things down forever.
-    if (Input.GetMouseButton(0) && !isReelable) // Or use Input.GetMouseButtonDown(0) for left click
+    if (Input.GetMouseButton(0) && !GameManager.GM.IsReelable && !GameManager.GM.IsCasting)
     {
-      if (!isCasting)
-      {
-        isCharging = true;
-        if (isCharging)
+        Debug.Log("Preparing Cast");
+        GameManager.GM.IsCharging = true;
+        if (GameManager.GM.IsCharging)
         {
           chargeAmount += Time.deltaTime * chargeRate;
 
           if (chargeAmount > maxCharge || chargeAmount < 0) chargeRate = -chargeRate;
-          Debug.Log("Charge: " + chargeAmount);
           chargeSlider.value = chargeAmount;
         }
-      }
     }
 
-    if (Input.GetMouseButtonUp(0) && isCharging && !isCasting)
+    if (Input.GetMouseButtonUp(0) && GameManager.GM.IsCharging && !GameManager.GM.IsCasting)
     {
-      if (isCharging)
-      {
-        Debug.Log("Release");
-        isCharging = false;
-        isCasting = true;
+        Debug.Log("Released");
+        GameManager.GM.IsCharging = false;
+        GameManager.GM.IsCasting = true;
         //the distance math should be figured out in the bobber. The casting is JUST the action.
         CastBobber(chargeAmount, maxCharge);
-            
-      }
     }
   }
 
   void CastRod()
   {
-    if (isCasting)
+    if (GameManager.GM.IsCasting)
     {
-      bobber.UpdateScale();
-      Debug.Log("Casting");
+      //this literally only exists to manage the text right now which is useless.
       float _currentDistanceTXT = Vector2.Distance(bobber.castStartPosition, bobber.transform.position);
       distanceText.text = $"{_currentDistanceTXT:F2}m";
     }
@@ -85,17 +70,18 @@ public class CastingRod : MonoBehaviour
 
   void RodReel()
   {
-    if (Input.GetMouseButton(0) && isReelable)
+    if (Input.GetMouseButtonUp(0) && GameManager.GM.IsReelable && !GameManager.GM.IsCasting)
     {
-      Debug.Log("Resetting");
       chargeAmount = 0;
-      isReelable = false;
       bobber.ResetPosition();
+      GameManager.GM.IsCasting = false;
+      GameManager.GM.IsCharging = false;
     }
   }
 
   private void CastBobber(float _charge, float _maxCharge)
   {
+    Debug.Log("Casting Bobber");
     //we coudl just straight call the bobber, but we may want additional bobber details later.
     bobber.ApplyCastForce(_charge, _maxCharge);
   }

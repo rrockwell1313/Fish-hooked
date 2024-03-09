@@ -6,6 +6,8 @@ public class BobberBehavior : MonoBehaviour
 {
   public Vector2 castStartPosition;
   private Vector3 originalScale;
+  private Coroutine travelCoroutine;
+
 
   public float maxCastForce = 15f;
   public float maxCastDistance = 5f;
@@ -28,25 +30,23 @@ public class BobberBehavior : MonoBehaviour
 
   public void ApplyCastForce(float _chargeAmount, float _maxCharge)
   {
-    distance  = (_chargeAmount / _maxCharge) * maxCastDistance;
+    
+    distance = (_chargeAmount / _maxCharge) * maxCastDistance;
     float forceMagnitude = (_chargeAmount / _maxCharge) * maxCastForce;
     rb.AddForce(new Vector2(0, forceMagnitude), ForceMode2D.Impulse);
+    
+    if (travelCoroutine != null)
+    {
+      StopCoroutine(travelCoroutine);
+    }
+    travelCoroutine = StartCoroutine(TravelAndScale());
   }
 
-  public void UpdateScale()
+  public void UpdateScale(float _progress)
   {
     currentDistance = Vector2.Distance(castStartPosition, transform.position);
-
-    float _progress = currentDistance / distance;
     float _scaleMultiplier = CalculateScaleMultiplier(_progress);
-
     transform.localScale = originalScale * _scaleMultiplier;
-    // once distanceToTravel is reached, stop moving.
-    if (currentDistance >= distance)
-    {
-        rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
-    }
   }
 
   float CalculateScaleMultiplier(float _progress)
@@ -64,7 +64,26 @@ public class BobberBehavior : MonoBehaviour
 
   public void ResetPosition()
   {
+    currentDistance = 0;
     transform.localPosition = castStartPosition;
+    GameManager.GM.IsReelable = false;
     Debug.Log("Reel In");
+  }
+
+  IEnumerator TravelAndScale()
+  {
+    while (currentDistance < distance)
+    {
+      currentDistance = Vector2.Distance(castStartPosition, transform.position);
+      float _progress = currentDistance / distance;
+      UpdateScale(_progress); 
+      yield return null; // Wait until next frame
+    }
+    rb.velocity = Vector2.zero;
+    // Signal that casting is complete and bobber is ready for interaction
+    GameManager.GM.IsCasting = false;
+    GameManager.GM.IsReelable = true;
+    //reset current distance
+    Debug.Log("Casting Complete");
   }
 }
