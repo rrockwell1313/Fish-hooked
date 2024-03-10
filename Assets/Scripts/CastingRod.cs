@@ -11,8 +11,8 @@ public class CastingRod : MonoBehaviour
   public BobberBehavior bobber;
 
   //this goes into the UI manager
-  public Slider chargeSlider;
-  public TextMeshProUGUI distanceText;
+  //public Slider chargeSlider;
+  //public TextMeshProUGUI distanceText;
 
   //this actually is correct.
   public float maxCharge = 100f;
@@ -44,7 +44,7 @@ public class CastingRod : MonoBehaviour
           chargeAmount += Time.deltaTime * chargeRate;
 
           if (chargeAmount > maxCharge || chargeAmount < 0) chargeRate = -chargeRate;
-          chargeSlider.value = chargeAmount;
+          UIManager.UI.UpdateChargeSlider(chargeAmount);
         }
     }
 
@@ -52,7 +52,8 @@ public class CastingRod : MonoBehaviour
     {
         Debug.Log("Released");
         GameManager.GM.IsCharging = false;
-        GameManager.GM.IsCasting = true;
+        GameManager.GM.ChangeCastingState(true);
+        //GameManager.GM.IsCasting = true;
         //the distance math should be figured out in the bobber. The casting is JUST the action.
         CastBobber(chargeAmount, maxCharge);
     }
@@ -64,7 +65,7 @@ public class CastingRod : MonoBehaviour
     {
       //this literally only exists to manage the text right now which is useless.
       float _currentDistanceTXT = Vector2.Distance(bobber.castStartPosition, bobber.transform.position);
-      distanceText.text = $"{_currentDistanceTXT:F2}m";
+      UIManager.UI.UpdateDistanceText( $"{_currentDistanceTXT:F2}m");
     }
   }
 
@@ -73,8 +74,10 @@ public class CastingRod : MonoBehaviour
     if (Input.GetMouseButtonUp(0) && GameManager.GM.IsReelable && !GameManager.GM.IsCasting)
     {
       chargeAmount = 0;
+      UIManager.UI.UpdateChargeSlider(chargeAmount);
+      UIManager.UI.UpdateDistanceText("0.00m");
       bobber.ResetPosition();
-      GameManager.GM.IsCasting = false;
+      GameManager.GM.ChangeCastingState(false);
       GameManager.GM.IsCharging = false;
     }
   }
