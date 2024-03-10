@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Diagnostics.Contracts;
 public class UIManager : MonoBehaviour
 {
-  //create singleton
   public static UIManager UI { get; set; }
 
   private Slider chargeSlider;
   private TextMeshProUGUI distanceText;
 
-  // Start is called before the first frame update
+ 
   private void Awake()
   {
     if (UI == null)
@@ -35,28 +35,70 @@ public class UIManager : MonoBehaviour
       distanceText = GameObject.Find("DistanceText").GetComponent<TextMeshProUGUI>();
 
     // Optional: Handle initialization or update the UI state if needed
-    UpdateUIInitialState();
   }
 
   private void OnEnable()
   {
-    // Subscribe to GameManager's event when the UIManager is enabled
-    GameManager.OnCastingStateChange += UpdateUIForCastingState;
+    //when GM runs this, we run update.
+    GameManager.OnStateChange += UpdateUIState;
   }
 
   private void OnDisable()
   {
-    // Unsubscribe from GameManager's event when the UIManager is disabled to avoid memory leaks
-    GameManager.OnCastingStateChange -= UpdateUIForCastingState;
+    GameManager.OnStateChange -= UpdateUIState;
   }
 
-  public void UpdateUIForCastingState(bool isCasting)
+  public void UpdateUIState(GameState newState)
   {
-    // Enable or disable the chargeSlider based on the isCasting state
-    Debug.Log("Casting state changed: " + isCasting);
-    chargeSlider.enabled = !isCasting;
+    ResetUI();//reset all existing UI before starting new ones.
+    switch (newState)
+    {
+      case GameState.Default:
+        UpdateChargeSlider(0);
+        UpdateDistanceText("0.00m");
+        UpdateDefaultUI(true);
+        break;
+      
+      case GameState.Casting:
+      break;
+      
+      case GameState.Charging:
+        UpdateChargingUI(true);
+      break;
+      
+      case GameState.Reelable:
+      break;
+      
+      default:
+      break;
+
+    }
+  }
+  public void ResetUI()
+  {
+    UpdateCastingUI(false);
+    UpdateDefaultUI(false);
   }
 
+  #region Activate UI States
+
+  public void UpdateChargingUI(bool value)
+  {
+    chargeSlider.gameObject.SetActive(value);
+  }
+  public void UpdateCastingUI(bool value)
+  {
+
+  }
+
+  public void UpdateDefaultUI(bool value)
+  {
+    chargeSlider.gameObject.SetActive(value);
+  }
+
+  #endregion
+
+  #region Update UI Values
   public void UpdateChargeSlider(float value)
   {
     if (chargeSlider != null)
@@ -68,12 +110,6 @@ public class UIManager : MonoBehaviour
     if (distanceText != null)
       distanceText.text = text;
   }
-
-  private void UpdateUIInitialState()
-  {
-    // Initialize your UI elements with default values or states if necessary
-  }
-
-  // ... Your other UIManager methods
+  #endregion
 }
 

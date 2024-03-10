@@ -2,27 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.CullingGroup;
 
+
+public enum GameState
+{
+  Default,
+  Casting,
+  Reelable,
+  Charging,
+  Fishing,
+  Hooked,
+  Snapped
+}
 public class GameManager : MonoBehaviour
 {
-  //Basically what this does is assign a object the ability to maintain existence in every scene, but only one of them.
-  //in turn, with its global existence we can call and set any variable what we need from it without defining it in each script.
-  //It makes it a little long, but allows us to always call a set location of states and data.
+  public GameState currentState;
+
   public static GameManager GM { get; private set; }
-  public static event Action<bool> OnCastingStateChange;
-
-
-  #region Fishing States
-  public bool IsCharging { get; set; } = false;
-  //attatch the event to IsCasting
-  public bool IsCasting { get; set; } = false;
-  public bool IsReelable { get; set; } = false;
-  #endregion
-
-  #region Game States
-  public bool IsPaused { get; set; }
-  public bool IsPlaying { get; set; } = false;
-  #endregion
+  public static event Action<GameState> OnStateChange;
 
   private void Awake()
   {
@@ -36,34 +34,23 @@ public class GameManager : MonoBehaviour
     {
       Destroy(gameObject);
     }
+    currentState = GameState.Default;//set default state.
   }
 
-  private void Update()
+  private void Start()
   {
-    //setup debugs to view all states.
-    if (IsCasting)
-    {
-      Debug.Log("Casting");
-    }
-
-    if (IsCharging)
-    {
-      Debug.Log("Charging");
-    }
-
-    if (IsReelable)
-    {
-      Debug.Log("Reelable");
-    }
+    OnStateChange += HandleStateChange;
   }
 
-  public void ChangeCastingState(bool newCastingState)
+  public void ChangeState(GameState newState)
   {
-    if (IsCasting != newCastingState)
-    {
-      IsCasting = newCastingState;
-      // Raise the event to notify subscribers
-      OnCastingStateChange?.Invoke(IsCasting);
-    }
+    Debug.Log($"Changing State to {newState}");
+    currentState = newState;
+    OnStateChange(newState);
+  }
+
+  private void HandleStateChange(GameState newState)
+  {
+    UIManager.UI.UpdateUIState(newState);
   }
 }

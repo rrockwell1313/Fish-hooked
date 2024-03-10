@@ -23,11 +23,6 @@ public class BobberBehavior : MonoBehaviour
     castStartPosition = transform.localPosition;
   }
 
-  void Update()
-  {
-      //nothing is needed yet.
-  }
-
   public void ApplyCastForce(float _chargeAmount, float _maxCharge)
   {
     
@@ -51,7 +46,6 @@ public class BobberBehavior : MonoBehaviour
 
   float CalculateScaleMultiplier(float _progress)
   {
-    //i need more knowledge about this.
     if (_progress <= 0.5f)
     {
       return Mathf.Lerp(1f, 2f, _progress * 2);
@@ -66,8 +60,7 @@ public class BobberBehavior : MonoBehaviour
   {
     currentDistance = 0;
     transform.localPosition = castStartPosition;
-    GameManager.GM.IsReelable = false;
-    Debug.Log("Reel In");
+    GameManager.GM.ChangeState(GameState.Default);
   }
 
   IEnumerator TravelAndScale()
@@ -80,10 +73,7 @@ public class BobberBehavior : MonoBehaviour
       yield return null; // Wait until next frame
     }
     rb.velocity = Vector2.zero;
-    // Signal that casting is complete and bobber is ready for interaction
-    GameManager.GM.IsCasting = false;
-    GameManager.GM.IsReelable = true;
-    //reset current distance
-    Debug.Log("Casting Complete");
+    GameManager.GM.ChangeState(GameState.Reelable);
+    
   }
 }
