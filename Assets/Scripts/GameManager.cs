@@ -11,6 +11,7 @@ public enum GameState
   Casting,
   Reelable,
   Charging,
+  Bobbing,
   Fishing,
   Hooked,
   Snapped

@@ -34,6 +34,10 @@ public class CastingRod : MonoBehaviour
           ChargeRod();
           break;
 
+        case GameState.Reelable:
+          RodReeling();
+          break;
+
         default:
           break;
       }
@@ -48,8 +52,8 @@ public class CastingRod : MonoBehaviour
           GameManager.GM.ChangeState(GameState.Casting);
           break;
 
-        case GameState.Reelable:
-          RodReel();
+        case GameState.Bobbing:
+          RodReelReset();
           break;
 
         default:
@@ -76,11 +80,17 @@ public class CastingRod : MonoBehaviour
     }
   }
 
-  void RodReel()
+  void RodReelReset()
   {
       chargeAmount = 0;
       UIManager.UI.UpdateChargeSlider(chargeAmount);
       bobber.ResetPosition();
+  }
+
+  void RodReeling()
+  {
+      //coming soon
+      Debug.Log("Rod Reeling");
   }
 
   void CastBobber(float _charge, float _maxCharge)

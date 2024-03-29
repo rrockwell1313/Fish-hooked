@@ -63,6 +63,12 @@ public class BobberBehavior : MonoBehaviour
     GameManager.GM.ChangeState(GameState.Default);
   }
 
+  public void BobbingForFish()
+  {
+    //beging bobbing up and down slightly for fish.
+    //maybe change what the bobber looks like visually here if needed.
+  }
+
   IEnumerator TravelAndScale()
   {
     while (currentDistance < distance)
@@ -73,7 +79,6 @@ public class BobberBehavior : MonoBehaviour
       yield return null; // Wait until next frame
     }
     rb.velocity = Vector2.zero;
-    GameManager.GM.ChangeState(GameState.Reelable);
-    
+    GameManager.GM.ChangeState(GameState.Bobbing);
   }
 }

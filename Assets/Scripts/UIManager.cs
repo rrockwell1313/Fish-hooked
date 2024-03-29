@@ -34,7 +34,6 @@ public class UIManager : MonoBehaviour
     if (distanceText == null)
       distanceText = GameObject.Find("DistanceText").GetComponent<TextMeshProUGUI>();
 
-    // Optional: Handle initialization or update the UI state if needed
   }
 
   private void OnEnable()
